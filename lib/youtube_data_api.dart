@@ -60,7 +60,22 @@ class YoutubeDataApi {
             ?.firstOrNull
             ?.get('itemSectionRenderer')
             ?.getList('contents');
-        list = contents!.toList();
+        var contentList = contents?.toList();
+        contentList?.forEach((element) {
+          if (element.containsKey('videoRenderer')) {
+            ///Element is Video
+            Video video = Video.fromMap(element);
+            list.add(video);
+          } else if (element.containsKey('channelRenderer')) {
+            ///Element is Channel
+            Channel channel = Channel.fromMap(element);
+            list.add(channel);
+          } else if (element.containsKey('playlistRenderer')) {
+            ///Element is Playlist
+            PlayList playList = PlayList.fromMap(element);
+            list.add(playList);
+          }
+        });
         _searchToken = _getContinuationToken(jsonMap);
         return list;
       });
@@ -100,6 +115,7 @@ class YoutubeDataApi {
           }
         });
         _searchToken = _getContinuationToken(jsonMap);
+        return list;
       }
     }
     return list;
